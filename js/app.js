@@ -1,0 +1,72 @@
+import { listings } from "./data.js";
+
+let newListings = listings;
+
+const resultsList = document.querySelector(".results__list");
+const searchCount = document.querySelector(".search__count");
+
+const markupGenerator = (listing) => {
+  const {
+    id,
+    name,
+    barangay,
+    monthlyRent,
+    maxOccupants,
+    utilitiesIncluded,
+    estimatedUtilities,
+    distanceToCampusKm,
+    fareOneWay,
+    amenities,
+  } = listing;
+
+  const utilitiesTag = utilitiesIncluded
+    ? `<span class="tag tag--utilities"
+                      >Utilities extra</span
+                    >`
+    : `<span class="tag tag--utilities"
+                      >No Utilities extra</span
+                    >`;
+
+  return `<li>
+              <button
+                class="card"
+                type="button"
+                data-id="bh-001"
+                aria-pressed="false"
+              >
+                <img
+                  class="card__image"
+                  alt=""
+                  width="96"
+                  height="96"
+                  loading="lazy"
+                  src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='96' height='96'><rect width='96' height='96' fill='%23e8f2ee'/><path d='M20 62l18-20 14 16 10-10 14 14v10H20z' fill='%231e7a5f' opacity='.45'/><circle cx='64' cy='32' r='7' fill='%231e7a5f' opacity='.45'/></svg>"
+                />
+                <span>
+                  <span class="card__name">${name}</span>
+                  <span class="card__meta"
+                    >${barangay} &middot; ${distanceToCampusKm} km from campus &middot; up to 4</span
+                  >
+                  <span class="card__rent">&#8369;${monthlyRent} / month</span>
+                  <span class="tags"
+                    >
+                    ${utilitiesTag}</span
+                  >
+                </span>
+              </button>
+            </li>`;
+};
+
+const results = () => {
+  if (newListings.length === 0) {
+    resultsList.innerHTML = `<li class="empty">
+              No listings match that search. Try a barangay name.
+            </li>`;
+
+    searchCount.textContent = "0 listings found";
+  }
+
+  resultsList.innerHTML = newListings.map(markupGenerator).join("");
+};
+
+results()
