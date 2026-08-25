@@ -1,8 +1,3 @@
-// Week 2-3: our "database" is a hardcoded array.
-// In Week 7-8 this same shape becomes a Mongoose schema and these records
-// move into seed/listings.json. Keep the field names stable so nothing
-// downstream has to be renamed later.
-
 export const listings = [
   {
     id: "bh-001",

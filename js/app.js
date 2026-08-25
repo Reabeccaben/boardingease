@@ -3,9 +3,12 @@ import { listings } from "./data.js";
 let newListings = listings;
 
 const resultsList = document.querySelector(".results__list");
+const detailsContainer = document.querySelector(".detail");
 const searchCount = document.querySelector(".search__count");
+const fieldInput = document.querySelector(".field__input");
 
 const markupGenerator = (listing) => {
+  // Gi destructure nato dire ang object
   const {
     id,
     name,
@@ -31,7 +34,7 @@ const markupGenerator = (listing) => {
               <button
                 class="card"
                 type="button"
-                data-id="bh-001"
+                data-id="${id}"
                 aria-pressed="false"
               >
                 <img
@@ -69,4 +72,64 @@ const results = () => {
   resultsList.innerHTML = newListings.map(markupGenerator).join("");
 };
 
-results()
+results();
+
+const detail = (listing) => {
+  const { name, barangay, monthlyRent } = listing;
+
+  // Template literals
+  return `
+   <h2 class="detail__name">${name}</h2>
+  <p class="detail__where">${barangay} &middot; &#8369;${monthlyRent} / month</p>
+
+   <fieldset class="splitter">
+            <legend class="splitter__legend">Split the cost</legend>
+
+            <div class="splitter__row">
+              <label for="occupants-demo">Sharing with</label>
+              <input
+                class="field__input"
+                type="number"
+                id="occupants-demo"
+                min="1"
+                max="4"
+                value="4"
+              />
+            </div>
+
+            <div class="splitter__row">
+              <label for="transport-demo">Include daily fare</label>
+              <input type="checkbox" id="transport-demo" checked />
+            </div>
+          </fieldset>
+
+          <div class="breakdown">
+            <p class="breakdown__line">
+              <span>Rent</span><span>&#8369;1,625</span>
+            </p>
+            <p class="breakdown__line">
+              <span>Utilities</span><span>&#8369;738</span>
+            </p>
+            <p class="breakdown__line">
+              <span>Transport</span><span>&#8369;660</span>
+            </p>
+            <p class="breakdown__total">
+              <span>Per person</span><span>&#8369;3,023</span>
+            </p>
+          </div>
+  `;
+};
+
+resultsList.addEventListener("click", (e) => {
+  const card = e.target.closest(".card");
+
+  // Guard clause
+  if (!card) return;
+
+  const listingID = card.dataset.id;
+
+  // loop the data, match the listingId
+  const listing = newListings.find((listing) => listingID === listing.id);
+
+  detailsContainer.innerHTML = detail(listing);
+});
