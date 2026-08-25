@@ -133,3 +133,7 @@ resultsList.addEventListener("click", (e) => {
 
   detailsContainer.innerHTML = detail(listing);
 });
+
+// Create event listener for the search field.
+// Show the results
+// Revert the list when search value is empty
