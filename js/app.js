@@ -134,11 +134,17 @@ resultsList.addEventListener("click", (event) => {
   detailsContainer.innerHTML = detailMarkUpGenerator(listing);
 });
 
+// ------------- ACTIVITY (Build the search functionality) -------------
 
-// -------------ACTIVITY-------------
-// Create event listener for the search field.
-// Show the results
-// Revert the list when search value is empty
+// 1. Attach an `input` event listener to the search field (`fieldInput`) so it reacts as the user types.
+
+// 2. Filter and display matches — as text is entered, narrow the listings down to those whose name matches the query, then re-render the results.
+
+// 3. Reset when empty — if the search box is cleared, restore the full list of listings.
+
+// The commented hint at the very bottom points you toward using `.filter()` on the listings array to find entries where the listing name matches what was typed:
 
 // event: input
-// const match = filter((listing) => listing.name === myShetNAme)
+// const match = listings.filter((listing) => listing.name === searchValue);
+
+// A quick note: strict equality (`===`) only matches an exact, full name. For a real search field you’ll usually want case-insensitive partial matching instead, e.g. `listing.name.toLowerCase().includes(searchValue.toLowerCase())`.
