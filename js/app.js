@@ -74,15 +74,17 @@ const results = () => {
 
 results();
 
-const detail = (listing) => {
+// Create event listener for the search field.
+// Show the results
+// Revert the list when search value is empty
+
+const detailMarkUpGenerator = (listing) => {
   const { name, barangay, monthlyRent } = listing;
 
-  // Template literals
   return `
    <h2 class="detail__name">${name}</h2>
-  <p class="detail__where">${barangay} &middot; &#8369;${monthlyRent} / month</p>
-
-   <fieldset class="splitter">
+          <p class="detail__where">${barangay} &middot; &#8369;${monthlyRent} / month</p>
+  <fieldset class="splitter">
             <legend class="splitter__legend">Split the cost</legend>
 
             <div class="splitter__row">
@@ -116,24 +118,27 @@ const detail = (listing) => {
             <p class="breakdown__total">
               <span>Per person</span><span>&#8369;3,023</span>
             </p>
-          </div>
+          </div>        
   `;
 };
 
-resultsList.addEventListener("click", (e) => {
-  const card = e.target.closest(".card");
+resultsList.addEventListener("click", (event) => {
+  const card = event.target.closest(".card");
 
-  // Guard clause
   if (!card) return;
 
   const listingID = card.dataset.id;
 
-  // loop the data, match the listingId
   const listing = newListings.find((listing) => listingID === listing.id);
 
-  detailsContainer.innerHTML = detail(listing);
+  detailsContainer.innerHTML = detailMarkUpGenerator(listing);
 });
 
+
+// -------------ACTIVITY-------------
 // Create event listener for the search field.
 // Show the results
 // Revert the list when search value is empty
+
+// event: input
+// const match = filter((listing) => listing.name === myShetNAme)
