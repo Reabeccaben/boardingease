@@ -3,8 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>BoardingEase — markup reference</title>
-    <link rel="stylesheet" href="css/main.css" />
+    <title>BoardingEase — find a place near campus</title>
+    <link rel="stylesheet" href="./css/main.css" />
   </head>
 
   <body>
@@ -12,7 +12,7 @@
       <div class="masthead__inner">
         <p class="wordmark">Boarding<span>Ease</span></p>
         <p class="masthead__tagline">
-          Markup reference — every state, hardcoded
+          Boarding houses and dorms near DOrSU Mati
         </p>
       </div>
     </header>
@@ -23,13 +23,15 @@
           Where are you staying this semester?
         </h1>
 
-        <form class="search__form">
+        <form class="search__form" id="search-form">
           <label class="field">
             <span class="field__label">Search</span>
             <input
               class="field__input"
               type="search"
-              value="Dahican"
+              id="search-input"
+              name="query"
+              placeholder="Casa, Seaview, Bayview…"
               autocomplete="off"
             />
           </label>
@@ -39,6 +41,8 @@
             <input
               class="field__input"
               type="number"
+              id="max-rent"
+              name="maxRent"
               min="0"
               step="500"
               placeholder="8000"
@@ -48,85 +52,21 @@
           <button class="button" type="submit">Search</button>
         </form>
 
-        <p class="search__count">3 listings found</p>
+        <p class="search__count" id="result-count" role="status"></p>
       </section>
 
       <div class="columns">
-        <section class="results">
-          <ul class="results__list">
-            <!-- Dire ta mag insert ug card list -->
-          </ul>
+        <section class="results" aria-labelledby="results-heading">
+          <h2 id="results-heading" class="visually-hidden">Search results</h2>
 
-          <p
-            style="
-              margin: 2rem 0 0.5rem;
-              font-size: 0.78rem;
-              font-weight: 600;
-              text-transform: uppercase;
-              letter-spacing: 0.06em;
-              color: #4a5b63;
-            "
-          >
-            Empty state
-          </p>
-          <ul class="results__list">
-            
+          <ul class="results__list" id="results-list">
+            <!-- Dire ta mag insert ug card list -->
           </ul>
         </section>
 
-        <aside class="detail">
-          <!-- DETAIL PANEL — populated. Copy into renderDetail(). -->
-          <h2 class="detail__name">Casa Amihan</h2>
-          <p class="detail__where">Dahican &middot; &#8369;6,500 / month</p>
-
-          <fieldset class="splitter">
-            <legend class="splitter__legend">Split the cost</legend>
-
-            <div class="splitter__row">
-              <label for="occupants-demo">Sharing with</label>
-              <input
-                class="field__input"
-                type="number"
-                id="occupants-demo"
-                min="1"
-                max="4"
-                value="4"
-              />
-            </div>
-
-            <div class="splitter__row">
-              <label for="transport-demo">Include daily fare</label>
-              <input type="checkbox" id="transport-demo" checked />
-            </div>
-          </fieldset>
-
-          <div class="breakdown">
-            <p class="breakdown__line">
-              <span>Rent</span><span>&#8369;1,625</span>
-            </p>
-            <p class="breakdown__line">
-              <span>Utilities</span><span>&#8369;738</span>
-            </p>
-            <p class="breakdown__line">
-              <span>Transport</span><span>&#8369;660</span>
-            </p>
-            <p class="breakdown__total">
-              <span>Per person</span><span>&#8369;3,023</span>
-            </p>
-          </div>
-
-          <!-- ERROR — replaces the breakdown when the occupancy cap is exceeded. -->
-          <p class="error">This listing allows at most 4 occupants.</p>
-
-          <!-- EMPTY — what the panel shows before anything is selected. -->
-          <p
-            class="detail__empty"
-            style="
-              margin-top: 1.5rem;
-              padding-top: 1rem;
-              border-top: 1px solid #e0dcd3;
-            "
-          >
+        <aside class="detail" id="detail-panel" aria-live="polite">
+          <!-- Gi puno ni sa JS. renderDetail() ang mag butang sa sulod. -->
+          <p class="detail__empty">
             Select a listing to see the cost breakdown.
           </p>
         </aside>
