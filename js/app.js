@@ -145,18 +145,17 @@ resultsList.addEventListener("click", (event) => {
 // });
 
 // maxRentInput.addEventListener("input", (e) => {
-//   const maxRent = e.target.value;
+//   const maxRent = e.target.value.toLowerCase().trim();
 
 //   if (maxRent === "") newListings = listings;
 //   else
-//     newListings = listings.filter((listing) => listing.monthlyRent <= maxRent);
+//     newListings = listings.filter((listing) => listing.monthlyRent <= +maxRent);
 
 //   results();
 // });
 
 const applyFilters = () => {
   const query = fieldInput.value.toLowerCase().trim();
-  
   const maxRent = maxRentInput.value;
 
   newListings = listings.filter((listing) => {
@@ -174,6 +173,28 @@ const applyFilters = () => {
 
 fieldInput.addEventListener("input", applyFilters);
 maxRentInput.addEventListener("input", applyFilters);
+
+// 
+// ------------- USING SUBMIT EVENT ------------------
+// 
+// searchForm.addEventListener("submit", (e) => {
+//   e.preventDefault();
+
+//   const query = searchForm.elements.query.value;
+//   const maxRent = searchForm.elements.maxRent.value;
+
+//   newListings = listings.filter((listing) => {
+//     const matchesQuery =
+//       query === "" || listing.name.toLowerCase().includes(query);
+
+//     const matchesRent =
+//       maxRent === "" || listing.monthlyRent <= Number(maxRent);
+
+//     return matchesQuery && matchesRent;
+//   });
+
+//   results();
+// });
 
 applyFilters();
 results();
