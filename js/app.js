@@ -1,13 +1,74 @@
 import { listings } from "./data.js";
 
-let newListings = listings;
-
+// ELEMENTS
 const resultsList = document.querySelector(".results__list");
 const detailsContainer = document.querySelector(".detail");
 const searchCount = document.querySelector(".search__count");
 const fieldInput = document.querySelector(".field__input");
 const maxRentInput = document.querySelector("#max-rent");
 const searchForm = document.querySelector("#search-form");
+const sharingWithInput = document.querySelector("#sharing-with");
+
+// STATE
+let newListings = listings;
+let selectedId = null;
+let occupants = 1;
+let includeTransport = false;
+
+const SCHOOL_DAYS_PER_MONTH = 22;
+
+const peso = new Intl.NumberFormat("en-PH", {
+  style: "currency",
+  currency: "PHP",
+  maximumFractionDigits: 0,
+});
+
+const applyFilters = () => {
+  const query = fieldInput.value.toLowerCase().trim();
+  const maxRent = maxRentInput.value;
+
+  newListings = listings.filter((listing) => {
+    const matchesQuery =
+      query === "" || listing.name.toLowerCase().includes(query);
+
+    const matchesRent =
+      maxRent === "" || listing.monthlyRent <= Number(maxRent);
+
+    return matchesQuery && matchesRent;
+  });
+
+  results();
+};
+
+const sumUtilities = ({ electricity = 0, water = 0, internet = 0 }) =>
+  electricity + water + internet;
+
+const calculateCostPerHead = (listing, people, withTransport) => {
+  if (!Number.isInteger(people) || people < 1)
+    throw new Error("Number od occupants must be a whole number, at least 1.");
+  if (people > listing.maxOccupants)
+    throw new Error(
+      `This listing allows at most ${listing.maxOccupants} occupants`,
+    );
+
+  const rentPerHead = listing.monthlyRent / people;
+
+  const utilitiesPerHead = listing.utilitiesIncluded
+    ? 0
+    : sumUtilities(listing.estimatedUtilities) / people;
+
+  const transportPerHead = withTransport
+    ? listing.fareOneWay * 2 * SCHOOL_DAYS_PER_MONTH
+    : 0;
+
+  return {
+    rentPerHead,
+    utilitiesPerHead,
+    transportPerHead,
+    totalPerHead: rentPerHead + utilitiesPerHead,
+    transportPerHead,
+  };
+};
 
 const markupGenerator = (listing) => {
   // Gi destructure nato dire ang object
@@ -74,12 +135,32 @@ const results = () => {
   resultsList.innerHTML = newListings.map(markupGenerator).join("");
 };
 
+const breakdownContent = (listing) => {
+  const { rentPerHead, utilitiesPerHead, transportPerHead, totalPerHead } =
+    calculateCostPerHead(listing, occupants, includeTransport);
+
+  return `
+    <p class="breakdown__line">
+      <span>Rent</span><span>${peso.format(rentPerHead)}</span>
+    </p>
+    <p class="breakdown__line">
+      <span>Utilities</span><span>${peso.format(utilitiesPerHead)}</span>
+    </p>
+    <p class="breakdown__line">
+      <span>Transport</span><span>${peso.format(transportPerHead)}</span>
+    </p>
+    <p class="breakdown__total">
+      <span>Per person</span><span>${peso.format(totalPerHead)}</span>
+    </p>
+    `;
+};
+
 const detailMarkUpGenerator = (listing) => {
-  const { name, barangay, monthlyRent } = listing;
+  const { name, barangay, monthlyRent, maxOccupants } = listing;
 
   return `
    <h2 class="detail__name">${name}</h2>
-          <p class="detail__where">${barangay} &middot; &#8369;${monthlyRent} / month</p>
+          <p class="detail__where">${barangay} &middot; ${peso.format(monthlyRent)} / month</p>
   <fieldset class="splitter">
             <legend class="splitter__legend">Split the cost</legend>
 
@@ -90,111 +171,87 @@ const detailMarkUpGenerator = (listing) => {
                 type="number"
                 id="occupants-demo"
                 min="1"
-                max="4"
-                value="4"
+                max="${maxOccupants}"
+                value="${occupants}"
               />
             </div>
 
             <div class="splitter__row">
               <label for="transport-demo">Include daily fare</label>
-              <input type="checkbox" id="transport-demo" checked />
+              <input type="checkbox" id="transport-demo" ${includeTransport ? "checked" : ""} />
             </div>
           </fieldset>
 
           <div class="breakdown">
-            <p class="breakdown__line">
-              <span>Rent</span><span>&#8369;1,625</span>
-            </p>
-            <p class="breakdown__line">
-              <span>Utilities</span><span>&#8369;738</span>
-            </p>
-            <p class="breakdown__line">
-              <span>Transport</span><span>&#8369;660</span>
-            </p>
-            <p class="breakdown__total">
-              <span>Per person</span><span>&#8369;3,023</span>
-            </p>
+            ${breakdownContent(listing)}
           </div>        
   `;
 };
+
+const selectedListing = () =>
+  listings.find((listing) => listing.id === selectedId);
+
+const renderDetail = () => {
+  if (!selectedId) {
+    detailsContainer.innerHTML = `<p class="detail__empty">Select a listing to see the cost breakdown.</p>`;
+    return;
+  }
+
+  const listing = selectedListing();
+
+  if (!listing) {
+    detailsContainer.innerHTML = `<p class="error">That listing could not be found.</p>`;
+    return;
+  }
+
+  detailsContainer.innerHTML = detailMarkUpGenerator(listing);
+};
+
+const updateBreakdown = () => {
+  const breakdown = detailsContainer.querySelector(".breakdown");
+  if (!breakdown) return;
+
+  const listing = selectedListing();
+  if (!listing) return;
+
+  breakdown.innerHTML = breakdownContent(listing);
+};
+
+// EVENT LISTENERS
 
 resultsList.addEventListener("click", (event) => {
   const card = event.target.closest(".card");
 
   if (!card) return;
 
-  const listingID = card.dataset.id;
+  selectedId = card.dataset.id;
 
-  const listing = newListings.find((listing) => listingID === listing.id);
+  const listing = selectedListing();
+  if (!listing) return;
 
-  detailsContainer.innerHTML = detailMarkUpGenerator(listing);
-});
-
-// fieldInput.addEventListener("input", (e) => {
-//   const searchValue = e.target.value.toLowerCase().trim();
-
-//   if (searchValue === "") {
-//     newListings = listings;
-//   } else {
-//     newListings = listings.filter((listing) =>
-//       listing.name.toLowerCase().includes(searchValue),
-//     );
-//   }
-
-//   results();
-// });
-
-// maxRentInput.addEventListener("input", (e) => {
-//   const maxRent = e.target.value.toLowerCase().trim();
-
-//   if (maxRent === "") newListings = listings;
-//   else
-//     newListings = listings.filter((listing) => listing.monthlyRent <= +maxRent);
-
-//   results();
-// });
-
-const applyFilters = () => {
-  const query = fieldInput.value.toLowerCase().trim();
-  const maxRent = maxRentInput.value;
-
-  newListings = listings.filter((listing) => {
-    const matchesQuery =
-      query === "" || listing.name.toLowerCase().includes(query);
-
-    const matchesRent =
-      maxRent === "" || listing.monthlyRent <= Number(maxRent);
-
-    return matchesQuery && matchesRent;
-  });
+  occupants = listing.maxOccupants;
 
   results();
-};
+  renderDetail();
+});
 
+detailsContainer.addEventListener("input", (e) => {
+  if (e.target.id === "occupants-demo") {
+    occupants = Number(e.target.value);
+    updateBreakdown();
+  }
+
+  if (e.target.id === "transport-demo") {
+    includeTransport = e.target.checked;
+    updateBreakdown();
+  }
+});
+
+searchForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+});
 fieldInput.addEventListener("input", applyFilters);
 maxRentInput.addEventListener("input", applyFilters);
-
-// 
-// ------------- USING SUBMIT EVENT ------------------
-// 
-// searchForm.addEventListener("submit", (e) => {
-//   e.preventDefault();
-
-//   const query = searchForm.elements.query.value;
-//   const maxRent = searchForm.elements.maxRent.value;
-
-//   newListings = listings.filter((listing) => {
-//     const matchesQuery =
-//       query === "" || listing.name.toLowerCase().includes(query);
-
-//     const matchesRent =
-//       maxRent === "" || listing.monthlyRent <= Number(maxRent);
-
-//     return matchesQuery && matchesRent;
-//   });
-
-//   results();
-// });
 
 applyFilters();
 results();
