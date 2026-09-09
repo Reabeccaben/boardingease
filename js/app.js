@@ -1,13 +1,74 @@
 import { listings } from "./data.js";
 
-let newListings = listings;
-
+// ELEMENTS
 const resultsList = document.querySelector(".results__list");
 const detailsContainer = document.querySelector(".detail");
 const searchCount = document.querySelector(".search__count");
 const fieldInput = document.querySelector(".field__input");
 const maxRentInput = document.querySelector("#max-input");
 const searchForm = document.querySelector("#search-form");
+const sharingWithInput = document.querySelector("#sharing-with");
+
+// STATE
+let newListings = listings;
+let selectedId = null;
+let occupants = 1;
+let includeTransport = false;
+
+const SCHOOL_DAYS_PER_MONTH = 22;
+
+const peso = new Intl.NumberFormat("en-PH", {
+  style: "currency",
+  currency: "PHP",
+  maximumFractionDigits: 0,
+});
+
+const applyFilters = () => {
+  const query = fieldInput.value.toLowerCase().trim();
+  const maxRent = maxRentInput.value;
+
+  newListings = listings.filter((listing) => {
+    const matchesQuery =
+      query === "" || listing.name.toLowerCase().includes(query);
+
+    const matchesRent =
+      maxRent === "" || listing.monthlyRent <= Number(maxRent);
+
+    return matchesQuery && matchesRent;
+  });
+
+  results();
+};
+
+const sumUtilities = ({ electricity = 0, water = 0, internet = 0 }) =>
+  electricity + water + internet;
+
+const calculateCostPerHead = (listing, people, withTransport) => {
+  if (!Number.isInteger(people) || people < 1)
+    throw new Error("Number od occupants must be a whole number, at least 1.");
+  if (people > listing.maxOccupants)
+    throw new Error(
+      `This listing allows at most ${listing.maxOccupants} occupants`,
+    );
+
+  const rentPerHead = listing.monthlyRent / people;
+
+  const utilitiesPerHead = listing.utilitiesIncluded
+    ? 0
+    : sumUtilities(listing.estimatedUtilities) / people;
+
+  const transportPerHead = withTransport
+    ? listing.fareOneWay * 2 * SCHOOL_DAYS_PER_MONTH
+    : 0;
+
+  return {
+    rentPerHead,
+    utilitiesPerHead,
+    transportPerHead,
+    totalPerHead: rentPerHead + utilitiesPerHead,
+    transportPerHead,
+  };
+};
 
 const markupGenerator = (listing) => {
   // Gi destructure nato dire ang object
@@ -315,10 +376,10 @@ resultsList.addEventListener("click", (event) => {
 
   if (!card) return;
 
-  const listingID = card.dataset.id;
+  selectedId = card.dataset.id;
 
   const listing = newListings.find(
-    (listing) => String(listing.id) === String(listingID)
+    (listing) => String(listing.id) === String(selectedId)
   );
 
   if (!listing) return;
