@@ -162,7 +162,7 @@ body {
 }
 
 .button:hover {
-  background: #22333d;
+  background: #3d2222;
 }
 .button:focus-visible {
   outline: 2px solid var(--green);
@@ -200,13 +200,12 @@ body {
   cursor: pointer;
 }
 
-.card:hover {
-  border-color: #c3bdb0;
-}
+.card:hover,
 .card:focus-visible {
-  outline: 2px solid var(--green);
-  outline-offset: 1px;
+  border-color: var(--green);
+  box-shadow: inset 3px 0 0 var(--green);
 }
+
 .card[aria-pressed="true"] {
   border-color: var(--green);
   box-shadow: inset 3px 0 0 var(--green);

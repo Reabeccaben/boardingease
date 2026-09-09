@@ -3,8 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>BoardingEase — find a place near campus</title>
-    <link rel="stylesheet" href="./css/main.css" />
+    <title>BoardingEase — markup reference</title>
+    <link rel="stylesheet" href="css/main.css" />
   </head>
 
   <body>
@@ -12,7 +12,7 @@
       <div class="masthead__inner">
         <p class="wordmark">Boarding<span>Ease</span></p>
         <p class="masthead__tagline">
-          Boarding houses and dorms near DOrSU Mati
+          Markup reference — every state, hardcoded
         </p>
       </div>
     </header>
@@ -26,46 +26,44 @@
         <form class="search__form" id="search-form">
           <label class="field">
             <span class="field__label">Search</span>
+
             <input
               class="field__input"
               type="search"
-              id="search-input"
-              name="query"
-              placeholder="Casa, Seaview, Bayview…"
+              value=""
               autocomplete="off"
+              id="search-input"
+              placeholder="Search by place"
             />
           </label>
 
           <label class="field field--narrow">
             <span class="field__label">Max rent</span>
+
             <input
               class="field__input"
               type="number"
-              id="max-rent"
-              name="maxRent"
               min="0"
               step="500"
               placeholder="8000"
+              id="max-input"
             />
           </label>
 
           <button class="button" type="submit">Search</button>
         </form>
 
-        <p class="search__count" id="result-count" role="status"></p>
+        <p class="search__count">0 listings found</p>
       </section>
 
       <div class="columns">
-        <section class="results" aria-labelledby="results-heading">
-          <h2 id="results-heading" class="visually-hidden">Search results</h2>
-
-          <ul class="results__list" id="results-list">
+        <section class="results">
+          <ul class="results__list">
             <!-- Dire ta mag insert ug card list -->
           </ul>
         </section>
 
-        <aside class="detail" id="detail-panel" aria-live="polite">
-          <!-- Gi puno ni sa JS. renderDetail() ang mag butang sa sulod. -->
+        <aside class="detail">
           <p class="detail__empty">
             Select a listing to see the cost breakdown.
           </p>
